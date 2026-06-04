@@ -1,0 +1,120 @@
+using System.Data;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using CuatroPatas.API.Data;
+using CuatroPatas.API.DTOs.Prescripcion;
+using CuatroPatas.API.Helpers;
+using CuatroPatas.API.Models.SpResults;
+using CuatroPatas.API.Repositories.Interfaces;
+using CuatroPatas.API.Services.Interfaces;
+
+namespace CuatroPatas.API.Services.Implementations;
+
+public class PrescripcionService : IPrescripcionService
+{
+    private readonly AppDbContext _context;
+    private readonly IPrescripcionRepository _repo;
+    private readonly ILogger<PrescripcionService> _logger;
+
+    public PrescripcionService(
+        AppDbContext context,
+        IPrescripcionRepository repo,
+        ILogger<PrescripcionService> logger)
+    {
+        _context = context;
+        _repo = repo;
+        _logger = logger;
+    }
+
+    public async Task<PrescripcionResponse> CreateAsync(CreatePrescripcionRequest request)
+    {
+        var idParam = new SqlParameter("@id_prescripcion", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+
+        await _context.Database.ExecuteSqlRawAsync(
+            "EXEC sp_Prescripcion_Create @id_historial, @id_medicamento, @dosis, @frecuencia, @duracion, @cantidad, @id_prescripcion OUTPUT",
+            new SqlParameter("@id_historial", request.IdHistorial),
+            new SqlParameter("@id_medicamento", request.IdMedicamento),
+            new SqlParameter("@dosis", request.Dosis),
+            new SqlParameter("@frecuencia", request.Frecuencia),
+            new SqlParameter("@duracion", request.Duracion),
+            new SqlParameter("@cantidad", request.Cantidad),
+            idParam);
+
+        var newId = (int)idParam.Value;
+        _logger.LogInformation("Prescripción creada: {Id}", newId);
+
+        var prescripcion = await _repo.GetByIdAsync(newId)
+            ?? throw new NotFoundException($"Prescripción {newId} no encontrada.");
+
+        return MapResponse(prescripcion);
+    }
+
+    public async Task<List<PrescripcionResponse>> GetByHistorialAsync(int idHistorial)
+    {
+        var results = await _context.Set<PrescripcionSpResult>()
+            .FromSqlRaw("EXEC sp_Prescripcion_ListByHistorial @id_historial",
+                new SqlParameter("@id_historial", idHistorial))
+            .ToListAsync();
+
+        return results.Select(MapSpResponse).ToList();
+    }
+
+    public async Task<List<PrescripcionResponse>> GetByMascotaAsync(int idMascota)
+    {
+        var results = await _context.Set<PrescripcionSpResult>()
+            .FromSqlRaw("EXEC sp_Prescripcion_ListByMascota @id_mascota",
+                new SqlParameter("@id_mascota", idMascota))
+            .ToListAsync();
+
+        return results.Select(MapSpResponse).ToList();
+    }
+
+    public async Task<PrescripcionResponse> UpdateAsync(int id, UpdatePrescripcionRequest request)
+    {
+        var prescripcion = await _repo.GetByIdAsync(id)
+            ?? throw new NotFoundException($"Prescripción {id} no encontrada.");
+
+        prescripcion.Dosis = request.Dosis;
+        prescripcion.Frecuencia = request.Frecuencia;
+        prescripcion.Duracion = request.Duracion;
+        prescripcion.Cantidad = request.Cantidad;
+
+        var actualizada = await _repo.UpdateAsync(prescripcion);
+        return MapResponse(actualizada);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        _ = await _repo.GetByIdAsync(id)
+            ?? throw new NotFoundException($"Prescripción {id} no encontrada.");
+        await _repo.DeleteAsync(id);
+    }
+
+    private static PrescripcionResponse MapResponse(Models.Prescripcion p) => new()
+    {
+        IdPrescripcion = p.IdPrescripcion,
+        IdHistorial = p.IdHistorial,
+        IdMedicamento = p.IdMedicamento,
+        Dosis = p.Dosis,
+        Frecuencia = p.Frecuencia,
+        Duracion = p.Duracion,
+        Cantidad = p.Cantidad,
+        FechaPrescripcion = p.FechaPrescripcion
+    };
+
+    private static PrescripcionResponse MapSpResponse(PrescripcionSpResult r) => new()
+    {
+        IdPrescripcion = r.id_prescripcion,
+        IdHistorial = r.id_historial,
+        IdMedicamento = r.id_medicamento,
+        NombreMedicamento = r.nombre_medicamento ?? string.Empty,
+        Dosis = r.dosis ?? string.Empty,
+        Frecuencia = r.frecuencia ?? string.Empty,
+        Duracion = r.duracion ?? string.Empty,
+        Cantidad = r.cantidad,
+        FechaPrescripcion = r.fecha_prescripcion
+    };
+}
