@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdateServicioRequest.cs
+// QUÉ HACE: Datos para actualizar un servicio del catálogo.
+//           Si se cambia el Precio, las citas futuras usarán el nuevo precio.
+//           Las citas pasadas mantienen su precio original (guardado en DetalleCita).
+// QUIÉN LO USA: ServicioController.Update → ServicioService.ActualizarServicioAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Servicio;

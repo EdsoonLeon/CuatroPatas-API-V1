@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: Veterinario.cs
+// QUÉ HACE: Representa la tabla VETERINARIO de la base de datos.
+//           Guarda el perfil profesional del veterinario.
+//           Siempre está ligado a una cuenta de usuario para poder iniciar sesión,
+//           aunque la FK es nullable por diseño del esquema SQL.
+// QUIÉN LO USA: VeterinarioService, VeterinarioRepository, CitaService
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,6 +19,8 @@ public class Veterinario
     [Column("id_veterinario")]
     public int IdVeterinario { get; set; }
 
+    // FK hacia USUARIO — nullable solo por flexibilidad del esquema,
+    // pero en la práctica siempre se crea junto con su cuenta de usuario.
     [Column("id_usuario")]
     public int? IdUsuario { get; set; }
 
@@ -35,6 +46,8 @@ public class Veterinario
     public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
     public Usuario? Usuario { get; set; }
+    // Sus franjas horarias de disponibilidad semanal
     public ICollection<HorarioVeterinario> Horarios { get; set; } = new List<HorarioVeterinario>();
+    // Todas las citas asignadas a este veterinario
     public ICollection<Cita> Citas { get; set; } = new List<Cita>();
 }

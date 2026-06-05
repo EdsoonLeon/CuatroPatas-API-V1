@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CreateMascotaRequest.cs
+// QUÉ HACE: Datos para registrar una nueva mascota.
+//           EdadCalculada no se incluye aquí porque la calcula SQL Server
+//           automáticamente a partir de FechaNacimiento.
+// QUIÉN LO USA: MascotaController.Create → MascotaService.CrearMascotaAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Mascota;

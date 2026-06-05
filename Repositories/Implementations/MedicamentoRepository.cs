@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: MedicamentoRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta las consultas SQL sobre la tabla MEDICAMENTO.
+//           CRUD básico — las operaciones de stock (descontar, reponer, stock bajo)
+//           NO están aquí porque van por SPs con auditoría; las maneja MedicamentoService
+//           directamente con ExecuteSqlRawAsync y FromSqlRaw.
+// QUIÉN LO USA: MedicamentoService (inyectado vía DI como IMedicamentoRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

@@ -6,6 +6,7 @@ using CuatroPatas.API.Services.Interfaces;
 
 namespace CuatroPatas.API.Controllers;
 
+// Endpoints de clientes — listado y creación manual son solo para PersonalClinica
 [ApiController]
 [Route("api/cliente")]
 public class ClienteController : ControllerBase
@@ -14,6 +15,7 @@ public class ClienteController : ControllerBase
 
     public ClienteController(IClienteService clienteService) => _clienteService = clienteService;
 
+    /// <summary>Lista todos los clientes registrados — solo PersonalClinica</summary>
     [Authorize(Policy = "PersonalClinica")]
     [HttpGet]
     public async Task<ActionResult<List<ClienteResponse>>> GetAll()
@@ -22,6 +24,7 @@ public class ClienteController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Devuelve el perfil de un cliente por su ID</summary>
     [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<ClienteResponse>> GetById(int id)
@@ -30,6 +33,7 @@ public class ClienteController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Crea un cliente manualmente desde el sistema de la clínica</summary>
     [Authorize(Policy = "PersonalClinica")]
     [HttpPost]
     public async Task<ActionResult<ClienteResponse>> Create([FromBody] CreateClienteRequest request)
@@ -38,6 +42,7 @@ public class ClienteController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.IdCliente }, result);
     }
 
+    /// <summary>Actualiza los datos personales del cliente</summary>
     [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult<ClienteResponse>> Update(int id, [FromBody] UpdateClienteRequest request)
@@ -46,6 +51,7 @@ public class ClienteController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Devuelve todas las mascotas registradas bajo el cliente</summary>
     [Authorize]
     [HttpGet("{id}/mascotas")]
     public async Task<ActionResult<List<MascotaResponse>>> GetMascotas(int id)

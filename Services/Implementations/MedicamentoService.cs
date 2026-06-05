@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: MedicamentoService.cs
+// QUÉ HACE: El "farmacéutico" que gestiona el inventario de medicamentos de la clínica.
+//           El CRUD estándar usa EF Core directamente.
+//           Las operaciones de stock (descontar, reponer, listar stock bajo) van siempre
+//           por SPs porque el SP registra cada movimiento en auditoría automáticamente,
+//           garantizando trazabilidad completa de cada unidad que entra o sale del inventario.
+// QUIÉN LO USA: MedicamentoController (inyectado como IMedicamentoService)
+// ═══════════════════════════════════════════════════════
+
 using AutoMapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdateMedicamentoRequest.cs
+// QUÉ HACE: Datos para actualizar un medicamento existente.
+//           NO incluye Stock — los cambios de inventario van por endpoints dedicados
+//           (/descontar-stock y /reponer-stock) para mantener trazabilidad y auditoría
+//           de cada movimiento de stock.
+// QUIÉN LO USA: MedicamentoController.Update → MedicamentoService.ActualizarMedicamentoAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Medicamento;

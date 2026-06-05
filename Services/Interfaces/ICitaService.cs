@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: ICitaService.cs
+// QUÉ HACE: Contrato del servicio de citas.
+//           Define las operaciones del ciclo de vida de una cita:
+//           crear, consultar, cambiar estado, cancelar y gestionar sus servicios.
+// QUIÉN LO USA: CitaController (inyectado como ICitaService)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.DTOs.Cita;
 
 namespace CuatroPatas.API.Services.Interfaces;

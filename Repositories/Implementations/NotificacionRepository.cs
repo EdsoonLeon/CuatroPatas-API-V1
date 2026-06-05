@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: NotificacionRepository.cs
+// QUÉ HACE: El "cajero" que escribe y actualiza notificaciones en la tabla NOTIFICACION.
+//           CreateAsync guarda un nuevo aviso (recordatorio de cita, alerta de stock, etc.).
+//           MarkAsSentAsync actualiza Enviada = true y FechaEnvio cuando el sistema
+//           de despacho confirma que la notificación llegó al canal del usuario.
+// QUIÉN LO USA: NotificacionService (inyectado vía DI como INotificacionRepository)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
 using CuatroPatas.API.Repositories.Interfaces;

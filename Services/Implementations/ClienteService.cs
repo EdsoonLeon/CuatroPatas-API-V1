@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: ClienteService.cs
+// QUÉ HACE: El "empleado de recepción" que gestiona los datos de los dueños de mascotas.
+//           Valida que no existan emails duplicados antes de crear un cliente.
+//           Usa AutoMapper para convertir entre la entidad Cliente y los DTOs de respuesta,
+//           evitando exponer campos internos como PasswordHash o FechaRegistro al exterior.
+// QUIÉN LO USA: ClienteController (inyectado como IClienteService)
+// ═══════════════════════════════════════════════════════
+
 using AutoMapper;
 using CuatroPatas.API.DTOs.Cliente;
 using CuatroPatas.API.DTOs.Mascota;

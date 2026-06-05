@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: Mascota.cs
+// QUÉ HACE: Representa la tabla MASCOTA de la base de datos.
+//           Guarda los datos de cada animal registrado en la clínica.
+//           La edad se calcula automáticamente en SQL Server — la app solo la lee.
+// QUIÉN LO USA: MascotaService, MascotaRepository, CitaService
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,6 +33,10 @@ public class Mascota
     [Column("fecha_nacimiento")]
     public DateTime? FechaNacimiento { get; set; }
 
+    // Esta columna la calcula SQL Server automáticamente a partir de fecha_nacimiento.
+    // El atributo DatabaseGenerated(Computed) le dice a EF que NO intente escribir este campo.
+    // Solo se lee — la app nunca la modifica directamente.
+    // Después de un INSERT o UPDATE, hacemos ReloadAsync() para traer el valor actualizado.
     [Column("edad_calculada")]
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public int? EdadCalculada { get; set; }

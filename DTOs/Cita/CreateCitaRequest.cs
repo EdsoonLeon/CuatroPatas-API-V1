@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CreateCitaRequest.cs
+// QUÉ HACE: Datos necesarios para agendar una nueva cita.
+//           El SP sp_Cita_Create usa estos datos para crear la cita
+//           y automáticamente genera el registro de Pago asociado.
+// QUIÉN LO USA: CitaController.Create → CitaService.CrearCitaAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Cita;

@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: Rol.cs
+// QUÉ HACE: Representa la tabla ROL de la base de datos.
+//           Contiene los roles disponibles en el sistema:
+//           Administrador, Veterinario, Recepcionista, Cliente.
+// QUIÉN LO USA: RolRepository, AuthService al asignar roles
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

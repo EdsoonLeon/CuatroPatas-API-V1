@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: MascotaService.cs
+// QUÉ HACE: El "empleado de archivo clínico" que gestiona los expedientes de las mascotas.
+//           El CRUD básico usa EF Core directamente (más simple y eficiente para estas operaciones).
+//           GetHistorialAsync y GetProximasCitasAsync usan SPs porque necesitan JOINs con múltiples
+//           tablas para devolver datos "desnormalizados" listos para mostrar en pantalla,
+//           sin que el frontend tenga que hacer múltiples peticiones para armarlos.
+// QUIÉN LO USA: MascotaController (inyectado como IMascotaService)
+// ═══════════════════════════════════════════════════════
+
 using AutoMapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

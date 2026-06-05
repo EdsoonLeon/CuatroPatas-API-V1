@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: RolRepository.cs
+// QUÉ HACE: El "cajero" que maneja la tabla ROL.
+//           Simple CRUD — los roles raramente cambian en producción.
+//           GetByNameAsync es el método más usado: al registrar un usuario,
+//           el servicio busca el rol "Cliente" por nombre para asignárselo.
+// QUIÉN LO USA: AuthService al registrar un nuevo usuario (inyectado como IRolRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

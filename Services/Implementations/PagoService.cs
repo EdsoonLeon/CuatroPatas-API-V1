@@ -1,3 +1,14 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: PagoService.cs
+// QUÉ HACE: El "cajero" que gestiona el cobro de las citas veterinarias.
+//           Los pagos NO se crean desde este servicio — el SP sp_Cita_Create
+//           genera automáticamente el registro de pago cuando se agenda una cita.
+//           Este servicio solo consulta el pago de una cita y lo actualiza
+//           cuando el cliente cancela su deuda (cambia estado a "Pagado",
+//           registra el método y la fecha de pago).
+// QUIÉN LO USA: PagoController (inyectado como IPagoService)
+// ═══════════════════════════════════════════════════════
+
 using AutoMapper;
 using CuatroPatas.API.DTOs.Pago;
 using CuatroPatas.API.Helpers;

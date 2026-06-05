@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdatePrescripcionRequest.cs
+// QUÉ HACE: Datos para modificar una receta existente (ajuste de dosis o duración).
+//           No permite cambiar el medicamento — para eso hay que crear una nueva prescripción
+//           y anular la anterior, para mantener trazabilidad del historial clínico.
+// QUIÉN LO USA: PrescripcionController.Update → PrescripcionService.ActualizarPrescripcionAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Prescripcion;

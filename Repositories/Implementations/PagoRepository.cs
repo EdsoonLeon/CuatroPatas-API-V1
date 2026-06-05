@@ -1,3 +1,14 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: PagoRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta consultas sobre la tabla PAGO.
+//           No tiene CreateAsync porque los pagos los crea automáticamente
+//           el SP sp_Cita_Create al agendar una cita — esta tabla nunca se
+//           escribe directamente desde la app en la creación.
+//           GetByCitaIdAsync es el método más usado: para ver cuánto debe el cliente
+//           o para marcar un pago como realizado.
+// QUIÉN LO USA: PagoService (inyectado vía DI como IPagoRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

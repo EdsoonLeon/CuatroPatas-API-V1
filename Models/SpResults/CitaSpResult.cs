@@ -1,5 +1,16 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CitaSpResult.cs
+// QUÉ HACE: Clase "recipiente" para el resultado de sp_Cita_Read y sp_Cita_List.
+//           Los SPs hacen JOIN con MASCOTA, VETERINARIO y CLIENTE para devolver
+//           una fila "desnormalizada" con toda la información de la cita en un solo paso.
+//           Así el controlador recibe todo listo sin necesitar consultas adicionales.
+//           No es una tabla real — se declara como HasNoKey en AppDbContext.
+// QUIÉN LO USA: CitaRepository.ObtenerCitaAsync, CitaRepository.ListarCitasAsync
+// ═══════════════════════════════════════════════════════
+
 namespace CuatroPatas.API.Models.SpResults;
 
+// ⚠️ Las propiedades DEBEN ser snake_case para que EF las mapee correctamente desde FromSqlRaw
 public class CitaSpResult
 {
     public int id_cita { get; set; }

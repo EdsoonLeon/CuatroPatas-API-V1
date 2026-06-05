@@ -1,3 +1,15 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: PrescripcionService.cs
+// QUÉ HACE: El "dispensador de recetas" que gestiona las prescripciones médicas.
+//           CreateAsync DEBE ir por SP porque la operación hace dos cosas a la vez:
+//           registra la prescripción Y descuenta el stock del medicamento de forma atómica.
+//           Si algo falla a mitad del proceso, la transacción del SP garantiza
+//           que ningún cambio quede a medias (todo o nada).
+//           Update y Delete van por EF directo porque son operaciones simples
+//           que no afectan el stock.
+// QUIÉN LO USA: PrescripcionController (inyectado como IPrescripcionService)
+// ═══════════════════════════════════════════════════════
+
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +38,10 @@ public class PrescripcionService : IPrescripcionService
         _logger = logger;
     }
 
+    /// <summary>Crea la prescripción vía SP (que descuenta stock) y devuelve el registro por ID OUTPUT</summary>
     public async Task<PrescripcionResponse> CreateAsync(CreatePrescripcionRequest request)
     {
+        // El SP descuenta el stock del medicamento internamente — no se hace en la app
         var idParam = new SqlParameter("@id_prescripcion", SqlDbType.Int)
         {
             Direction = ParameterDirection.Output
@@ -93,6 +107,7 @@ public class PrescripcionService : IPrescripcionService
         await _repo.DeleteAsync(id);
     }
 
+    // Mapeo desde entidad EF (sin nombre del medicamento — se usa solo en Update/GetById directo)
     private static PrescripcionResponse MapResponse(Models.Prescripcion p) => new()
     {
         IdPrescripcion = p.IdPrescripcion,
@@ -105,6 +120,7 @@ public class PrescripcionService : IPrescripcionService
         FechaPrescripcion = p.FechaPrescripcion
     };
 
+    // Mapeo desde SpResult (incluye NombreMedicamento que el SP resuelve con JOIN)
     private static PrescripcionResponse MapSpResponse(PrescripcionSpResult r) => new()
     {
         IdPrescripcion = r.id_prescripcion,

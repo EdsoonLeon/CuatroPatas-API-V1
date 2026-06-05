@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: HistorialMedicoRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta consultas simples sobre HISTORIAL_MEDICO.
+//           Interfaz deliberadamente pequeña: la creación y los listados van por SPs
+//           (con datos enriquecidos de múltiples tablas), así que solo exponemos
+//           GetById (para verificar existencia) y Update (para ediciones directas).
+// QUIÉN LO USA: HistorialMedicoService (inyectado vía DI como IHistorialMedicoRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

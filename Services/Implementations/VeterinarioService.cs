@@ -1,3 +1,14 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: VeterinarioService.cs
+// QUÉ HACE: El "empleado de RRHH" que gestiona los datos del personal veterinario.
+//           CreateAsync es más complejo que en otros servicios: crea simultáneamente
+//           la cuenta de Usuario (con contraseña hasheada) y el perfil de Veterinario,
+//           y luego llama al SP para asignarle el rol "Veterinario" en un solo flujo.
+//           GetAgendaAsync y GetEstadisticasAsync consultan SPs con JOINs para devolver
+//           datos enriquecidos que el veterinario ve en su panel.
+// QUIÉN LO USA: VeterinarioController (inyectado como IVeterinarioService)
+// ═══════════════════════════════════════════════════════
+
 using System.Data;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
@@ -47,6 +58,7 @@ public class VeterinarioService : IVeterinarioService
         return _mapper.Map<VeterinarioResponse>(vet);
     }
 
+    /// <summary>Crea el perfil de veterinario junto con su cuenta de usuario y rol "Veterinario"</summary>
     public async Task<VeterinarioResponse> CreateAsync(CreateVeterinarioRequest request)
     {
         var existe = await _repo.GetByEmailAsync(request.Email);
@@ -64,6 +76,7 @@ public class VeterinarioService : IVeterinarioService
         };
         await _usuarioRepo.CreateAsync(usuario);
 
+        // El SP asigna el rol en USUARIO_ROL y maneja duplicados internamente
         await _context.Database.ExecuteSqlRawAsync(
             "EXEC sp_Usuario_AssignRole @id_usuario, @nombre_rol",
             new SqlParameter("@id_usuario", usuario.IdUsuario),

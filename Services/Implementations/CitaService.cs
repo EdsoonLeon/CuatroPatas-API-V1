@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CitaService.cs
+// QUÉ HACE: El "empleado de recepción" que gestiona el agendamiento de citas.
+//           Todas las operaciones (leer, crear, cambiar estado, cancelar)
+//           se delegan a Stored Procedures porque estas acciones requieren
+//           transacciones complejas (crear pago al crear cita, registrar auditoría, etc.).
+// QUIÉN LO USA: CitaController (inyectado como ICitaService)
+// ═══════════════════════════════════════════════════════
+
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -48,8 +57,10 @@ public class CitaService : ICitaService
         return results.Select(MapResponse).ToList();
     }
 
+    /// <summary>Devuelve las citas del cliente autenticado buscando su perfil por IdUsuario</summary>
     public async Task<List<CitaResponse>> GetMisCitasAsync(int idUsuario)
     {
+        // El JWT tiene IdUsuario, no IdCliente — hay que resolver el perfil de cliente primero
         var cliente = await _clienteRepo.GetByUsuarioIdAsync(idUsuario)
             ?? throw new NotFoundException("No se encontró perfil de cliente para este usuario.");
 
@@ -69,8 +80,10 @@ public class CitaService : ICitaService
         return MapResponse(cita);
     }
 
+    /// <summary>Crea la cita vía SP y devuelve el registro completo leyendo el ID generado por OUTPUT</summary>
     public async Task<CitaResponse> CreateAsync(CreateCitaRequest request, int idUsuario)
     {
+        // OUTPUT parameter para capturar el ID nuevo sin una consulta adicional
         var idCitaParam = new SqlParameter("@id_cita", SqlDbType.Int)
         {
             Direction = ParameterDirection.Output

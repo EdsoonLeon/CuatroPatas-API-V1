@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: IVeterinarioRepository.cs
+// QUÉ HACE: Contrato del "cajero" que habla con la tabla VETERINARIO.
+//           GetByEmailAsync permite validar unicidad de email antes de crear
+//           o detectar al vet por su correo al hacer login.
+// QUIÉN LO USA: VeterinarioRepository (implementación), VeterinarioService
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.Models;
 
 namespace CuatroPatas.API.Repositories.Interfaces;

@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: MascotaRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta las consultas SQL sobre la tabla MASCOTA.
+//           Detalle importante: CreateAsync y UpdateAsync llaman a ReloadAsync()
+//           después de guardar para traer el campo edad_calculada, que SQL Server
+//           calcula automáticamente — EF no lo tiene en memoria hasta ese refresh.
+// QUIÉN LO USA: MascotaService (inyectado vía DI como IMascotaRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
@@ -25,7 +34,7 @@ public class MascotaRepository : IMascotaRepository
     {
         _context.Mascotas.Add(mascota);
         await _context.SaveChangesAsync();
-        // Reload to get computed column
+        // ReloadAsync para traer EdadCalculada que SQL Server generó — EF no la tiene en el objeto en memoria
         await _context.Entry(mascota).ReloadAsync();
         return mascota;
     }
@@ -34,6 +43,7 @@ public class MascotaRepository : IMascotaRepository
     {
         _context.Mascotas.Update(mascota);
         await _context.SaveChangesAsync();
+        // Mismo motivo: la columna computed puede cambiar si se modificó FechaNacimiento
         await _context.Entry(mascota).ReloadAsync();
         return mascota;
     }

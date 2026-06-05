@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CuatroPatas.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22d6c3f25eecc45066ebb94b04990c85465cff70")]
 [assembly: System.Reflection.AssemblyProductAttribute("CuatroPatas.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CuatroPatas.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

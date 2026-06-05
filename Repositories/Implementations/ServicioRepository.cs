@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: ServicioRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta las consultas SQL sobre la tabla SERVICIO
+//           (el catálogo de servicios clínicos: consulta, vacuna, cirugía, etc.).
+//           SoftDeleteAsync pone Activo = false en vez de borrar el registro,
+//           para que los DetalleCita históricos sigan referenciando el servicio
+//           aunque ya no esté disponible en el catálogo activo.
+// QUIÉN LO USA: ServicioService (inyectado vía DI como IServicioRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

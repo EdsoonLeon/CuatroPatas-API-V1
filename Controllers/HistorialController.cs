@@ -5,6 +5,7 @@ using CuatroPatas.API.Services.Interfaces;
 
 namespace CuatroPatas.API.Controllers;
 
+// Endpoints de historial médico — solo VetOAdmin puede crear y eliminar; cualquier usuario autenticado puede leer
 [ApiController]
 [Route("api/historial")]
 public class HistorialController : ControllerBase
@@ -13,6 +14,7 @@ public class HistorialController : ControllerBase
 
     public HistorialController(IHistorialMedicoService historialService) => _historialService = historialService;
 
+    /// <summary>Crea un registro en el historial médico de la mascota — solo VetOAdmin</summary>
     [Authorize(Policy = "VetOAdmin")]
     [HttpPost]
     public async Task<ActionResult<HistorialResponse>> Create([FromBody] CreateHistorialRequest request)
@@ -21,6 +23,7 @@ public class HistorialController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.IdHistorial }, result);
     }
 
+    /// <summary>Devuelve un registro de historial por su ID</summary>
     [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<HistorialResponse>> GetById(int id)
@@ -29,6 +32,7 @@ public class HistorialController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Lista el historial de una mascota con filtros opcionales de tipo y fecha</summary>
     [Authorize]
     [HttpGet("mascota/{idMascota}")]
     public async Task<ActionResult<List<HistorialResponse>>> GetByMascota(
@@ -41,6 +45,7 @@ public class HistorialController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Devuelve solo los registros de vacunación de la mascota</summary>
     [Authorize]
     [HttpGet("mascota/{idMascota}/vacunas")]
     public async Task<ActionResult<List<HistorialResponse>>> GetVacunas(int idMascota)
@@ -49,6 +54,7 @@ public class HistorialController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Soft delete de un registro de historial — solo VetOAdmin</summary>
     [Authorize(Policy = "VetOAdmin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

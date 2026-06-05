@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: IVeterinarioService.cs
+// QUÉ HACE: Contrato del servicio de veterinarios.
+//           Además del CRUD básico, expone GetAgendaAsync (calendario del vet)
+//           y GetEstadisticasAsync (métricas de rendimiento por período).
+//           Ambas consultas van a través de Stored Procedures dedicados.
+// QUIÉN LO USA: VeterinarioController (inyectado como IVeterinarioService)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.DTOs.Veterinario;
 
 namespace CuatroPatas.API.Services.Interfaces;

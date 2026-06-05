@@ -1,13 +1,29 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: AppDbContext.cs
+// QUÉ HACE: Es el "puente" entre el código C# y la base de datos SQL Server.
+//           Contiene una propiedad (DbSet) por cada tabla que usamos.
+//           También configura las relaciones, restricciones y casos especiales
+//           que no se pueden expresar solo con atributos en los modelos.
+// QUIÉN LO USA: Todos los Repositories para consultar y guardar datos
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Models;
 using CuatroPatas.API.Models.SpResults;
 
 namespace CuatroPatas.API.Data;
 
+// DbContext es la clase base de Entity Framework Core.
+// Hereda de ella y configuramos nuestras 18 tablas más los 9 tipos para Stored Procedures.
 public class AppDbContext : DbContext
 {
+    // El constructor recibe la configuración (incluida la cadena de conexión)
+    // que fue registrada en Program.cs → AddDbContext<AppDbContext>(...)
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+    // ─── TABLAS DE LA BASE DE DATOS ───────────────────────────────────────────
+    // Cada DbSet<T> representa una tabla real en SQL Server.
+    // El nombre de la propiedad no importa; el nombre de la tabla viene del atributo [Table] en el modelo.
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Rol> Roles { get; set; }
     public DbSet<UsuarioRol> UsuarioRoles { get; set; }
@@ -27,7 +43,10 @@ public class AppDbContext : DbContext
     public DbSet<Notificacion> Notificaciones { get; set; }
     public DbSet<Auditoria> Auditorias { get; set; }
 
-    // Keyless entities for SP results
+    // ─── TIPOS PARA LEER RESULTADOS DE STORED PROCEDURES ─────────────────────
+    // Estos NO son tablas reales — son clases que usamos para recibir los datos
+    // que devuelven los Stored Procedures vía FromSqlRaw().
+    // HasNoKey() en OnModelCreating le dice a EF que no intente rastrearlos ni hacer CRUD.
     public DbSet<AuthSpResult> AuthSpResults { get; set; }
     public DbSet<CitaSpResult> CitaSpResults { get; set; }
     public DbSet<CitaServicioSpResult> CitaServicioSpResults { get; set; }
@@ -38,11 +57,19 @@ public class AppDbContext : DbContext
     public DbSet<StockBajoSpResult> StockBajoSpResults { get; set; }
     public DbSet<DashboardSpResult> DashboardSpResults { get; set; }
 
+    /// <summary>
+    /// Configuraciones especiales del modelo que no se pueden poner
+    /// como simples atributos en las entidades. Aquí van las relaciones complejas,
+    /// claves compuestas y columnas computadas.
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Composite PK for USUARIO_ROL
+        // ─── CLAVE COMPUESTA EN USUARIO_ROL ───────────────────────────────────
+        // La tabla USUARIO_ROL no tiene un ID propio — su clave primaria son
+        // dos columnas juntas: (IdUsuario + IdRol). Esto garantiza que un usuario
+        // no pueda tener el mismo rol asignado dos veces.
         modelBuilder.Entity<UsuarioRol>()
             .HasKey(ur => new { ur.IdUsuario, ur.IdRol });
 
@@ -56,47 +83,58 @@ public class AppDbContext : DbContext
             .WithMany(r => r.UsuarioRoles)
             .HasForeignKey(ur => ur.IdRol);
 
-        // Mascota computed column
+        // ─── COLUMNA COMPUTADA EN MASCOTA ─────────────────────────────────────
+        // edad_calculada es una columna que SQL Server calcula automáticamente
+        // a partir de fecha_nacimiento. NUNCA la escribimos desde la app —
+        // solo la leemos. ValueGeneratedOnAddOrUpdate le dice a EF que la refresque
+        // después de cada INSERT o UPDATE.
         modelBuilder.Entity<Mascota>()
             .Property(m => m.EdadCalculada)
             .ValueGeneratedOnAddOrUpdate();
 
-        // Cita -> Mascota
+        // ─── RESTRICCIONES DE ELIMINACIÓN ─────────────────────────────────────
+        // Usamos Restrict en lugar de Cascade para evitar borrados en cadena accidentales.
+        // En este sistema NUNCA se borran registros físicamente — todo es baja lógica (Activo = false).
+        // Si alguien intentara borrar una Mascota que tiene Citas, la BD lo rechazaría.
+
         modelBuilder.Entity<Cita>()
             .HasOne(c => c.Mascota)
             .WithMany(m => m.Citas)
             .HasForeignKey(c => c.IdMascota)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Cita -> Veterinario
         modelBuilder.Entity<Cita>()
             .HasOne(c => c.Veterinario)
             .WithMany(v => v.Citas)
             .HasForeignKey(c => c.IdVeterinario)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Pago -> Cita (one-to-one)
+        // ─── PAGO: RELACIÓN UNO A UNO CON CITA ───────────────────────────────
+        // Cada Cita tiene exactamente un Pago asociado (creado automáticamente por el SP).
+        // HasOne/WithOne le dice a EF que es una relación 1:1, no 1:N.
+        // Esto habilita la propiedad navegación cita.Pago directamente.
         modelBuilder.Entity<Pago>()
             .HasOne(p => p.Cita)
             .WithOne(c => c.Pago)
             .HasForeignKey<Pago>(p => p.IdCita)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // HistorialMedico -> Mascota
         modelBuilder.Entity<HistorialMedico>()
             .HasOne(h => h.Mascota)
             .WithMany(m => m.Historiales)
             .HasForeignKey(h => h.IdMascota)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // HistorialMedico -> Veterinario
         modelBuilder.Entity<HistorialMedico>()
             .HasOne(h => h.Veterinario)
             .WithMany()
             .HasForeignKey(h => h.IdVeterinario)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // HistorialMedico -> Cita (optional)
+        // ─── HISTORIAL: CITA OPCIONAL ─────────────────────────────────────────
+        // Un historial puede crearse sin tener una cita formal asociada
+        // (ejemplo: vacunación directa, urgencia). Por eso IdCita es nullable
+        // y si la Cita se elimina, el historial queda con IdCita = null (SetNull).
         modelBuilder.Entity<HistorialMedico>()
             .HasOne(h => h.Cita)
             .WithMany(c => c.Historiales)
@@ -104,7 +142,10 @@ public class AppDbContext : DbContext
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Keyless SP result entities
+        // ─── TIPOS SIN CLAVE (para Stored Procedures) ────────────────────────
+        // HasNoKey() le dice a EF que estos tipos no corresponden a tablas reales.
+        // Solo sirven para recibir los resultados de FromSqlRaw("EXEC sp_Nombre...").
+        // EF no intentará hacer INSERT, UPDATE ni DELETE con ellos.
         modelBuilder.Entity<AuthSpResult>().HasNoKey();
         modelBuilder.Entity<CitaSpResult>().HasNoKey();
         modelBuilder.Entity<CitaServicioSpResult>().HasNoKey();

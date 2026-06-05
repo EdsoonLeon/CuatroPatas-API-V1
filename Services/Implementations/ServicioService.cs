@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: ServicioService.cs
+// QUÉ HACE: El "empleado del catálogo" que gestiona los servicios que ofrece la clínica
+//           (consulta, vacunación, cirugía, baño, corte de uñas, etc.).
+//           CRUD simple — este módulo no tiene lógica de negocio compleja
+//           porque el precio se "congela" en DetalleCita cuando se usa en una cita,
+//           así que actualizar un precio aquí no afecta citas pasadas.
+// QUIÉN LO USA: ServicioController (inyectado como IServicioService)
+// ═══════════════════════════════════════════════════════
+
 using AutoMapper;
 using CuatroPatas.API.DTOs.Servicio;
 using CuatroPatas.API.Helpers;

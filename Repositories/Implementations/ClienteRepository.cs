@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: ClienteRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta las consultas SQL sobre la tabla CLIENTE.
+//           Todas las lecturas filtran por Activo=true (borrado lógico).
+//           GetMascotasAsync es un atajo conveniente que evita ir al MascotaRepository
+//           cuando solo necesitas las mascotas de un cliente específico.
+// QUIÉN LO USA: ClienteService (inyectado vía DI como IClienteRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
@@ -21,6 +30,7 @@ public class ClienteRepository : IClienteRepository
     public async Task<Cliente?> GetByUsuarioIdAsync(int idUsuario) =>
         await _context.Clientes.FirstOrDefaultAsync(c => c.IdUsuario == idUsuario && c.Activo);
 
+    // Sin filtro Activo — permite detectar emails duplicados aunque el cliente esté desactivado
     public async Task<Cliente?> GetByEmailAsync(string email) =>
         await _context.Clientes.FirstOrDefaultAsync(c => c.Email == email);
 

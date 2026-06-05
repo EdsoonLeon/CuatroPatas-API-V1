@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: IPrescripcionService.cs
+// QUÉ HACE: Contrato del servicio de prescripciones (recetas médicas).
+//           CreateAsync va por SP porque la creación descuenta stock automáticamente.
+//           DeleteAsync es eliminación física — excepción al patrón de soft delete
+//           para que los errores en recetas se puedan corregir limpiamente.
+// QUIÉN LO USA: PrescripcionController (inyectado como IPrescripcionService)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.DTOs.Prescripcion;
 
 namespace CuatroPatas.API.Services.Interfaces;

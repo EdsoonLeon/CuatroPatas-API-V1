@@ -5,6 +5,7 @@ using CuatroPatas.API.Services.Interfaces;
 
 namespace CuatroPatas.API.Controllers;
 
+// Endpoints de pagos — acceso restringido a PersonalClinica; no hay creación manual (la hace el SP de Cita)
 [ApiController]
 [Route("api/pago")]
 [Authorize(Policy = "PersonalClinica")]
@@ -14,6 +15,7 @@ public class PagoController : ControllerBase
 
     public PagoController(IPagoService pagoService) => _pagoService = pagoService;
 
+    /// <summary>Devuelve el pago asociado a una cita específica</summary>
     [HttpGet("cita/{idCita}")]
     public async Task<ActionResult<PagoResponse>> GetByCita(int idCita)
     {
@@ -21,6 +23,7 @@ public class PagoController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Actualiza el estado o método de pago de una orden</summary>
     [HttpPut("{id}")]
     public async Task<ActionResult<PagoResponse>> Update(int id, [FromBody] UpdatePagoRequest request)
     {

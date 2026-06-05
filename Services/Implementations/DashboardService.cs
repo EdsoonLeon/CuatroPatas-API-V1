@@ -1,3 +1,14 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: DashboardService.cs
+// QUÉ HACE: El "contador general" que prepara el resumen ejecutivo de la clínica.
+//           Una sola llamada al SP sp_Dashboard_Resumen devuelve todas las métricas
+//           del panel de control: citas del día, semana y mes, totales de clientes
+//           y mascotas, ingresos y alertas de inventario.
+//           Usar un solo SP en vez de múltiples consultas individuales reduce
+//           significativamente el número de viajes a la base de datos.
+// QUIÉN LO USA: DashboardController (inyectado como IDashboardService)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;

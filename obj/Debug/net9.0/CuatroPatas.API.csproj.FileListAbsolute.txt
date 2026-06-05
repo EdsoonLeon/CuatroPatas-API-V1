@@ -168,3 +168,4 @@ C:\VETERINARIA_WEB_BACKEND-FRONT\CuatroPatas.API\obj\Debug\net9.0\CuatroPatas.AP
 C:\VETERINARIA_WEB_BACKEND-FRONT\CuatroPatas.API\obj\Debug\net9.0\CuatroPatas.API.genruntimeconfig.cache
 C:\VETERINARIA_WEB_BACKEND-FRONT\CuatroPatas.API\obj\Debug\net9.0\ref\CuatroPatas.API.dll
 C:\VETERINARIA_WEB_BACKEND-FRONT\CuatroPatas.API\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\VETERINARIA_WEB_BACKEND-FRONT\CuatroPatas.API\obj\Debug\net9.0\CuatroPatas.API.sourcelink.json

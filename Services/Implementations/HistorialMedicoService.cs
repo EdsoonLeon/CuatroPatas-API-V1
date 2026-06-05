@@ -1,3 +1,14 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: HistorialMedicoService.cs
+// QUÉ HACE: El "archivista clínico" que guarda y consulta el expediente médico de las mascotas.
+//           CreateAsync usa SP porque la creación incluye auditoría automática en la BD.
+//           Los listados también usan SPs para traer datos enriquecidos (nombre del vet, mascota)
+//           sin necesitar consultas adicionales.
+//           GetByIdAsync y SoftDeleteAsync van por EF directo o SP liviano porque
+//           no necesitan datos de otras tablas.
+// QUIÉN LO USA: HistorialController (inyectado como IHistorialMedicoService)
+// ═══════════════════════════════════════════════════════
+
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +37,10 @@ public class HistorialMedicoService : IHistorialMedicoService
         _logger = logger;
     }
 
+    /// <summary>Crea el historial vía SP y devuelve el registro completo usando el ID obtenido por OUTPUT</summary>
     public async Task<HistorialResponse> CreateAsync(CreateHistorialRequest request)
     {
+        // OUTPUT parameter — el SP también registra auditoría internamente
         var idParam = new SqlParameter("@id_historial", SqlDbType.Int)
         {
             Direction = ParameterDirection.Output

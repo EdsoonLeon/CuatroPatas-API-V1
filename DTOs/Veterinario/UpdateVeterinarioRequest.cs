@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdateVeterinarioRequest.cs
+// QUÉ HACE: Datos para actualizar la información de un veterinario.
+//           No incluye Password — el cambio de contraseña va por un endpoint dedicado
+//           para mantener la seguridad (requiere confirmar contraseña actual, etc.).
+// QUIÉN LO USA: VeterinarioController.Update → VeterinarioService.ActualizarVeterinarioAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Veterinario;

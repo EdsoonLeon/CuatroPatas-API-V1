@@ -1,3 +1,10 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CreateMedicamentoRequest.cs
+// QUÉ HACE: Datos para agregar un nuevo medicamento al inventario.
+//           StockMinimo tiene un default de 5 — umbral conservador para clínicas pequeñas.
+// QUIÉN LO USA: MedicamentoController.Create → MedicamentoService.CrearMedicamentoAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Medicamento;
@@ -15,6 +22,7 @@ public class CreateMedicamentoRequest
     [Required, Range(0.01, double.MaxValue)]
     public decimal Precio { get; set; }
 
+    // Umbral de alerta: cuando Stock ≤ StockMinimo aparece en el reporte de stock bajo
     [Required, Range(0, int.MaxValue)]
     public int StockMinimo { get; set; } = 5;
 }

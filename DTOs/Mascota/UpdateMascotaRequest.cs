@@ -1,3 +1,10 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdateMascotaRequest.cs
+// QUÉ HACE: Datos para actualizar la información de una mascota existente.
+//           No incluye IdCliente — el dueño de la mascota no se cambia en una actualización.
+// QUIÉN LO USA: MascotaController.Update → MascotaService.ActualizarMascotaAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Mascota;

@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: RefreshTokenRepository.cs
+// QUÉ HACE: El "cajero" que maneja los "códigos de renovación" en la base de datos.
+//           GetByTokenAsync incluye el Usuario con Include() porque la rotación de token
+//           necesita los datos del usuario para generar el nuevo AccessToken JWT.
+//           DeleteExpiredAsync limpia tokens vencidos — debería llamarse periódicamente.
+// QUIÉN LO USA: AuthService (inyectado vía DI como IRefreshTokenRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
@@ -11,6 +20,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
     public RefreshTokenRepository(AppDbContext context) => _context = context;
 
+    // Include(Usuario) porque al rotar el token necesitamos los datos del usuario para el nuevo JWT
     public async Task<RefreshToken?> GetByTokenAsync(string token) =>
         await _context.RefreshTokens
             .Include(r => r.Usuario)
@@ -28,6 +38,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         var rt = await _context.RefreshTokens.FirstOrDefaultAsync(r => r.Token == token);
         if (rt != null)
         {
+            // Marcar como revocado — se conserva el registro para auditoría
             rt.Revocado = true;
             await _context.SaveChangesAsync();
         }

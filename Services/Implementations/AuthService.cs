@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: AuthService.cs
+// QUÉ HACE: El "empleado de seguridad" que gestiona el acceso al sistema.
+//           Verifica identidades, emite carnets digitales (JWT) y códigos de
+//           renovación (Refresh Token), y lleva el registro de intentos fallidos.
+//           Toda la verificación de contraseñas y el control de bloqueos
+//           se delegan a Stored Procedures de SQL Server para mayor trazabilidad.
+// QUIÉN LO USA: AuthController (inyectado como IAuthService)
+// ═══════════════════════════════════════════════════════
+
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -36,34 +46,53 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Autentica al usuario verificando sus credenciales y devuelve
+    /// el JWT + refresh token listos para usar.
+    /// Si la contraseña falla, el SP registra el intento y puede bloquear la cuenta.
+    /// </summary>
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
+        // Le preguntamos a la base de datos si existe ese email y nos devuelve
+        // el hash de contraseña guardado + los roles del usuario en una sola consulta
         var results = await _context.Set<AuthSpResult>()
             .FromSqlRaw("EXEC sp_Usuario_Authenticate @email",
                 new SqlParameter("@email", request.Email))
             .ToListAsync();
 
+        // Si no existe el email, devolvemos "credenciales inválidas" — nunca "email no encontrado"
+        // para no dar pistas a posibles atacantes de qué emails están registrados
         var user = results.FirstOrDefault()
             ?? throw new UnauthorizedException("Credenciales inválidas.");
 
         if (!user.activo)
             throw new UnauthorizedException("Usuario inactivo.");
 
+        // Verificamos bloqueo ANTES de comprobar la contraseña para no dar pistas
+        // de que el email existe pero está bloqueado
         if (user.bloqueado)
             throw new UnauthorizedException("Usuario bloqueado. Contacte al administrador.");
 
+        // BCrypt compara la contraseña que escribió el usuario
+        // con la "huella digital" que tenemos guardada en la base de datos
+        // (nunca guardamos la contraseña real, solo su huella encriptada)
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.password_hash))
         {
+            // El SP incrementa IntentosFallidos; si supera el límite, activa Bloqueado = true
+            // Esto protege contra ataques de fuerza bruta que prueban miles de contraseñas
             await _context.Database.ExecuteSqlRawAsync(
                 "EXEC sp_Usuario_RegisterFailedLogin @id_usuario",
                 new SqlParameter("@id_usuario", user.id_usuario));
             throw new UnauthorizedException("Credenciales inválidas.");
         }
 
+        // Login exitoso — el SP resetea el contador de intentos fallidos a 0
         await _context.Database.ExecuteSqlRawAsync(
             "EXEC sp_Usuario_RegisterSuccessLogin @id_usuario",
             new SqlParameter("@id_usuario", user.id_usuario));
 
+        // Los roles llegan como "Administrador,Veterinario" — los separamos para
+        // crear un claim individual por cada rol (necesario para las políticas de acceso)
         var roles = user.roles?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? [];
         var accessToken = _jwtHelper.GenerarToken(user.id_usuario, user.email!, roles);
         var refreshToken = _jwtHelper.GenerarRefreshToken();
@@ -90,12 +119,20 @@ public class AuthService : IAuthService
         };
     }
 
+    /// <summary>
+    /// Registra un nuevo cliente: crea su cuenta de Usuario, su perfil de Cliente
+    /// y le asigna el rol "Cliente" vía SP. Al terminar hace login automático
+    /// para que el usuario reciba su token directamente sin tener que loguearse aparte.
+    /// </summary>
     public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
     {
         var emailExiste = await _usuarioRepo.GetByEmailAsync(request.Email);
         if (emailExiste != null)
             throw new ConflictException("El email ya está registrado.");
 
+        // workFactor 12 = balance recomendado entre seguridad y velocidad para BCrypt.
+        // Un factor más alto es más seguro pero más lento; 12 demora ~0.3 segundos por hash,
+        // suficiente para frenar ataques de fuerza bruta sin afectar la experiencia del usuario.
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, workFactor: 12);
 
         var usuario = new Usuario
@@ -130,6 +167,11 @@ public class AuthService : IAuthService
         return await LoginAsync(new LoginRequest { Email = request.Email, Password = request.Password });
     }
 
+    /// <summary>
+    /// Renueva la sesión del usuario sin pedir contraseña.
+    /// Invalida el refresh token usado y emite uno nuevo (rotación de token),
+    /// lo que evita que el mismo código de renovación pueda usarse dos veces.
+    /// </summary>
     public async Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request)
     {
         var rt = await _refreshTokenRepo.GetByTokenAsync(request.RefreshToken)

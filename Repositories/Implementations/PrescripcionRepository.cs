@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: PrescripcionRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta consultas simples sobre la tabla PRESCRIPCION.
+//           DeleteAsync es la única excepción al patrón de borrado lógico del sistema:
+//           aquí se elimina el registro físicamente porque los errores en recetas
+//           médicas deben poder corregirse limpiamente, sin dejar rastros confusos.
+//           La creación va por SP (en el servicio) para descontar stock atómicamente.
+// QUIÉN LO USA: PrescripcionService (inyectado vía DI como IPrescripcionRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;

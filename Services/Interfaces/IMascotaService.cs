@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: IMascotaService.cs
+// QUÉ HACE: Contrato del servicio de mascotas.
+//           Agrupa el CRUD de mascotas junto con GetHistorialAsync y
+//           GetProximasCitasAsync — las dos consultas más usadas desde
+//           el perfil de una mascota en el portal del cliente.
+// QUIÉN LO USA: MascotaController (inyectado como IMascotaService)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.DTOs.Mascota;
 using CuatroPatas.API.DTOs.Historial;
 using CuatroPatas.API.DTOs.Cita;

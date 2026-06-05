@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: UpdateClienteRequest.cs
+// QUÉ HACE: Datos para actualizar un cliente existente.
+//           Todos los campos principales son obligatorios — se hace un UPDATE completo,
+//           no un PATCH parcial. El SP sp_Cliente_Update reemplaza todos estos campos.
+// QUIÉN LO USA: ClienteController.Update → ClienteService.ActualizarClienteAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Cliente;

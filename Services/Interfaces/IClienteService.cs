@@ -1,3 +1,11 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: IClienteService.cs
+// QUÉ HACE: Contrato del servicio de clientes (dueños de mascotas).
+//           Incluye GetMascotasAsync como atajo conveniente para el flujo
+//           más común: ver qué mascotas tiene un cliente específico.
+// QUIÉN LO USA: ClienteController (inyectado como IClienteService)
+// ═══════════════════════════════════════════════════════
+
 using CuatroPatas.API.DTOs.Cliente;
 using CuatroPatas.API.DTOs.Mascota;
 

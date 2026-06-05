@@ -1,3 +1,12 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: CreateClienteRequest.cs
+// QUÉ HACE: Datos para registrar un nuevo cliente directamente por el admin.
+//           A diferencia del registro público (RegisterRequest), este crea solo
+//           el Cliente sin crear una cuenta de acceso al sistema.
+//           El SP sp_Cliente_Create puede crear también un usuario si se desea.
+// QUIÉN LO USA: ClienteController.Create → ClienteService.CrearClienteAsync
+// ═══════════════════════════════════════════════════════
+
 using System.ComponentModel.DataAnnotations;
 
 namespace CuatroPatas.API.DTOs.Cliente;

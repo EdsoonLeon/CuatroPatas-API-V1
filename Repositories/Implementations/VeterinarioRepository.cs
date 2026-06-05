@@ -1,3 +1,13 @@
+// ═══════════════════════════════════════════════════════
+// ARCHIVO: VeterinarioRepository.cs
+// QUÉ HACE: El "cajero" que ejecuta las consultas SQL sobre la tabla VETERINARIO.
+//           Todas las lecturas filtran por Activo=true (borrado lógico).
+//           GetByEmailAsync permite detectar duplicados antes de registrar un nuevo vet.
+//           La agenda y las estadísticas NO están aquí — las maneja VeterinarioService
+//           directamente con SPs porque requieren JOINs con otras tablas.
+// QUIÉN LO USA: VeterinarioService (inyectado vía DI como IVeterinarioRepository)
+// ═══════════════════════════════════════════════════════
+
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
