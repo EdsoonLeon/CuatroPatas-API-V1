@@ -60,4 +60,14 @@ public class AuthController : ControllerBase
         await _authService.LogoutAsync(request.RefreshToken);
         return NoContent();
     }
+
+    /// <summary>Cambia la contraseña del usuario autenticado verificando la contraseña actual</summary>
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _authService.ChangePasswordAsync(idUsuario, request);
+        return NoContent();
+    }
 }

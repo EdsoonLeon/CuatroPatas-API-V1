@@ -93,8 +93,10 @@ public class PrescripcionService : IPrescripcionService
 
         prescripcion.Dosis = request.Dosis;
         prescripcion.Frecuencia = request.Frecuencia;
-        prescripcion.Duracion = request.Duracion;
-        prescripcion.Cantidad = request.Cantidad;
+        prescripcion.DuracionDias = request.DuracionDias;
+        prescripcion.Indicaciones = request.Indicaciones;
+        prescripcion.FechaInicio = request.FechaInicio;
+        prescripcion.FechaFin = request.FechaFin;
 
         var actualizada = await _repo.UpdateAsync(prescripcion);
         return MapResponse(actualizada);
@@ -115,22 +117,24 @@ public class PrescripcionService : IPrescripcionService
         IdMedicamento = p.IdMedicamento,
         Dosis = p.Dosis,
         Frecuencia = p.Frecuencia,
-        Duracion = p.Duracion,
-        Cantidad = p.Cantidad,
-        FechaPrescripcion = p.FechaPrescripcion
+        DuracionDias = p.DuracionDias,
+        Indicaciones = p.Indicaciones,
+        FechaInicio = p.FechaInicio,
+        FechaFin = p.FechaFin
     };
 
     // Mapeo desde SpResult (incluye NombreMedicamento que el SP resuelve con JOIN)
     private static PrescripcionResponse MapSpResponse(PrescripcionSpResult r) => new()
     {
         IdPrescripcion = r.id_prescripcion,
-        IdHistorial = r.id_historial,
-        IdMedicamento = r.id_medicamento,
-        NombreMedicamento = r.nombre_medicamento ?? string.Empty,
+        IdMedicamento = r.id_medicamento ?? 0,
+        NombreMedicamento = r.medicamento_nombre ?? string.Empty,
         Dosis = r.dosis ?? string.Empty,
-        Frecuencia = r.frecuencia ?? string.Empty,
-        Duracion = r.duracion ?? string.Empty,
-        Cantidad = r.cantidad,
-        FechaPrescripcion = r.fecha_prescripcion
+        Frecuencia = r.frecuencia,
+        DuracionDias = r.duracion_dias,
+        Indicaciones = r.indicaciones,
+        FechaInicio = r.fecha_inicio,
+        FechaFin = r.fecha_fin,
+        NombreVeterinario = r.veterinario_nombre
     };
 }

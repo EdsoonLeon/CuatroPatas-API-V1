@@ -21,6 +21,7 @@ public class UpdateClienteRequest
     [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
 
+    public string? Dni { get; set; }
     public string? Telefono { get; set; }
     public string? Direccion { get; set; }
 }

@@ -18,5 +18,5 @@ public class VeterinarioResponse
     public string Email { get; set; } = string.Empty;
     public string? Telefono { get; set; }
     public string? Especialidad { get; set; }
-    public DateTime FechaRegistro { get; set; }
+    public DateTime FechaAlta { get; set; }
 }

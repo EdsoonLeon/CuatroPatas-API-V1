@@ -18,5 +18,4 @@ public class PagoResponse
     public string? MetodoPago { get; set; }
     // La fecha en que se recibió el pago — null si aún está pendiente
     public DateTime? FechaPago { get; set; }
-    public DateTime FechaCreacion { get; set; }
 }

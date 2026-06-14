@@ -2,7 +2,27 @@
   "permissions": {
     "allow": [
       "Bash(dotnet add *)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "PowerShell(dotnet build *)",
+      "PowerShell(cd C:\\\\VETERINARIA_WEB_BACKEND-FRONT\\\\CuatroPatas.API; $output = dotnet build CuatroPatas.API.csproj 2>&1; $csErrors = $output | Where-Object { $_ -match \"error CS\\\\d+\" }; if \\($csErrors\\) { $csErrors } else { Write-Host \"Sin errores de C# \\(CS####\\)\" }; $output | Select-Object -Last 5)",
+      "PowerShell(cd C:\\\\VETERINARIA_WEB_BACKEND-FRONT\\\\CuatroPatas.API; $output = dotnet build CuatroPatas.API.csproj 2>&1; $csErrors = $output | Where-Object { $_ -match \"error CS\\\\d+\" }; if \\($csErrors\\) { Write-Host \"ERRORES C#:\"; $csErrors } else { Write-Host \"Sin errores de C#\" }; $output | Select-Object -Last 4)",
+      "Bash(curl *)",
+      "PowerShell(head *)",
+      "PowerShell(sqlcmd -S \"localhost\\\\SQLEXPRESS\" -d CuatroPatasDB -Q $query -W 2>&1)",
+      "PowerShell($query = \"SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN \\('MASCOTA','CLIENTE','VETERINARIO','CITA'\\) ORDER BY TABLE_NAME, ORDINAL_POSITION\")",
+      "PowerShell(netstat *)",
+      "PowerShell(sqlcmd *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(Get-Process *)",
+      "Bash(dotnet run *)",
+      "Read(//c/VETERINARIA_WEB_BACKEND-FRONT/Cuatro_Patas_Web/**)",
+      "Bash(npm run *)",
+      "Bash(taskkill *)",
+      "PowerShell(Stop-Process *)",
+      "PowerShell($login = Invoke-RestMethod -Uri \"http://localhost:5197/api/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"email\":\"admin@cuatropatas.com\",\"password\":\"Admin123!\"}'; $token = $login.accessToken; $citas = Invoke-RestMethod -Uri \"http://localhost:5197/api/cita\" -Headers @{Authorization=\"Bearer $token\"}; $citas | ConvertTo-Json -Depth 3 | Select-Object -First 1)",
+      "PowerShell($login = Invoke-RestMethod -Uri \"http://localhost:5197/api/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"email\":\"admin@cuatropatas.com\",\"password\":\"Admin123!\"}'; $token = $login.accessToken; Write-Host \"Token OK\"; $response = Invoke-WebRequest -Uri \"http://localhost:5197/api/cita\" -Headers @{Authorization=\"Bearer $token\"}; Write-Host \"Status: $\\($response.StatusCode\\)\"; $response.Content.Substring\\(0, [Math]::Min\\(400, $response.Content.Length\\)\\))",
+      "PowerShell(try { $login = Invoke-RestMethod -Uri \"http://localhost:5197/api/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"email\":\"admin@cuatropatas.com\",\"password\":\"Admin123!\"}' -TimeoutSec 10; $token = $login.accessToken; Write-Host \"Login OK, token length: $\\($token.Length\\)\"; $citas = Invoke-RestMethod -Uri \"http://localhost:5197/api/cita\" -Headers @{Authorization=\"Bearer $token\"} -TimeoutSec 10; Write-Host \"Citas count: $\\($citas.Count\\)\"; $citas[0] | ConvertTo-Json } catch { Write-Host \"ERROR: $_\" })",
+      "PowerShell(Test-NetConnection *)"
     ]
   }
 }

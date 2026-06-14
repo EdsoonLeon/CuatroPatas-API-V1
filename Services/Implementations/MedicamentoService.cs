@@ -87,9 +87,9 @@ public class MedicamentoService : IMedicamentoService
         {
             IdMedicamento = r.id_medicamento,
             Nombre = r.nombre ?? string.Empty,
+            Tipo = r.tipo,
             Stock = r.stock,
-            StockMinimo = r.stock_minimo,
-            Precio = r.precio
+            PrecioUnitario = r.precio_unitario
         }).ToList();
     }
 

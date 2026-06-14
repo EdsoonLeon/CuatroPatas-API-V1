@@ -28,7 +28,7 @@ public class RolRepository : IRolRepository
         await _context.Roles.FindAsync(id);
 
     public async Task<Rol?> GetByNameAsync(string nombre) =>
-        await _context.Roles.FirstOrDefaultAsync(r => r.NombreRol == nombre && r.Activo);
+        await _context.Roles.FirstOrDefaultAsync(r => r.Nombre == nombre && r.Activo);
 
     public async Task<Rol> CreateAsync(Rol rol)
     {

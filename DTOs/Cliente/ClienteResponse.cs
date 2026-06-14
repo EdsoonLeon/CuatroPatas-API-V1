@@ -16,6 +16,7 @@ public class ClienteResponse
     // Calculado en el DTO para no duplicar la lógica de concatenación en cada vista del frontend
     public string NombreCompleto => $"{Nombre} {Apellido}";
     public string Email { get; set; } = string.Empty;
+    public string? Dni { get; set; }
     public string? Telefono { get; set; }
     public string? Direccion { get; set; }
     public DateTime FechaRegistro { get; set; }

@@ -83,6 +83,19 @@ public class AppDbContext : DbContext
             .WithMany(r => r.UsuarioRoles)
             .HasForeignKey(ur => ur.IdRol);
 
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("REFRESH_TOKEN");
+            entity.HasKey(e => e.IdToken);
+            entity.Property(e => e.IdToken).HasColumnName("id_token");
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.Token).HasColumnName("token");
+            entity.Property(e => e.FechaExpiracion).HasColumnName("fecha_expiracion");
+            entity.Property(e => e.Revocado).HasColumnName("revocado");
+            entity.Property(e => e.FechaCreacion).HasColumnName("fecha_creacion");
+           
+        });
+
         // ─── COLUMNA COMPUTADA EN MASCOTA ─────────────────────────────────────
         // edad_calculada es una columna que SQL Server calcula automáticamente
         // a partir de fecha_nacimiento. NUNCA la escribimos desde la app —
@@ -142,6 +155,73 @@ public class AppDbContext : DbContext
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // ─── FK EXPLÍCITAS (patrón Id{Tipo} no es reconocido por la convención de EF) ──
+        // EF Core espera {NavPropName}Id o {PrincipalType}Id como FK.
+        // Nuestros modelos usan Id{TipoRelacionado} (ej: IdCliente), así que EF
+        // generaría columnas shadow inexistentes (ej: ClienteIdCliente) sin estas config.
+
+        modelBuilder.Entity<Mascota>()
+            .HasOne(m => m.Cliente)
+            .WithMany(c => c.Mascotas)
+            .HasForeignKey(m => m.IdCliente)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Cliente>()
+            .HasOne(c => c.Usuario)
+            .WithMany()
+            .HasForeignKey(c => c.IdUsuario)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Veterinario>()
+            .HasOne(v => v.Usuario)
+            .WithMany()
+            .HasForeignKey(v => v.IdUsuario)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<HorarioVeterinario>()
+            .HasOne(h => h.Veterinario)
+            .WithMany(v => v.Horarios)
+            .HasForeignKey(h => h.IdVeterinario)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DetalleCita>()
+            .HasOne(d => d.Cita)
+            .WithMany(c => c.DetallesCita)
+            .HasForeignKey(d => d.IdCita)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DetalleCita>()
+            .HasOne(d => d.Servicio)
+            .WithMany(s => s.DetallesCita)
+            .HasForeignKey(d => d.IdServicio)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DocumentoMascota>()
+            .HasOne(d => d.Mascota)
+            .WithMany(m => m.Documentos)
+            .HasForeignKey(d => d.IdMascota)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Prescripcion>()
+            .HasOne(p => p.HistorialMedico)
+            .WithMany(h => h.Prescripciones)
+            .HasForeignKey(p => p.IdHistorial)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Prescripcion>()
+            .HasOne(p => p.Medicamento)
+            .WithMany(m => m.Prescripciones)
+            .HasForeignKey(p => p.IdMedicamento)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notificacion>()
+            .HasOne(n => n.Usuario)
+            .WithMany(u => u.Notificaciones)
+            .HasForeignKey(n => n.IdUsuario)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // ─── TIPOS SIN CLAVE (para Stored Procedures) ────────────────────────
         // HasNoKey() le dice a EF que estos tipos no corresponden a tablas reales.
         // Solo sirven para recibir los resultados de FromSqlRaw("EXEC sp_Nombre...").
@@ -155,5 +235,16 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<PrescripcionSpResult>().HasNoKey();
         modelBuilder.Entity<StockBajoSpResult>().HasNoKey();
         modelBuilder.Entity<DashboardSpResult>().HasNoKey();
+
+        // ─── TABLAS CON TRIGGERS ──────────────────────────────────────────────
+        // SQL Server no permite OUTPUT sin INTO en tablas que tienen triggers activos.
+        // EF Core 7+ usa OUTPUT INSERTED para recuperar IDs generados, lo que falla.
+        // UseSqlOutputClause(false) hace que EF use SELECT SCOPE_IDENTITY() en su lugar.
+        // Se aplica a todas las entidades reales (no keyless) para cubrir cualquier trigger.
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(e => !e.IsKeyless))
+        {
+            modelBuilder.Entity(entityType.ClrType)
+                .ToTable(t => t.UseSqlOutputClause(false));
+        }
     }
 }

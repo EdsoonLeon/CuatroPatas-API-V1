@@ -1,13 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// ARCHIVO: DocumentoMascota.cs
-// QUÉ HACE: Representa la tabla DOCUMENTO_MASCOTA de la base de datos.
-//           Guarda referencias a archivos adjuntos de una mascota:
-//           radiografías, análisis de laboratorio, certificados de vacuna, etc.
-//           NO guarda el archivo en la BD — solo guarda la URL donde está alojado
-//           (blob de Azure, S3, carpeta del servidor, etc.).
-// QUIÉN LO USA: DocumentoService, MascotaService
-// ═══════════════════════════════════════════════════════
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,17 +13,23 @@ public class DocumentoMascota
     [Column("id_mascota")]
     public int IdMascota { get; set; }
 
-    // Categoría del archivo: "Radiografía", "Análisis", "Certificado Vacuna", etc.
-    // Facilita la búsqueda y el filtrado en el historial documental
-    [Column("tipo_documento")]
-    public string TipoDocumento { get; set; } = string.Empty;
+    [Column("id_historial")]
+    public int? IdHistorial { get; set; }
 
-    [Column("descripcion")]
-    public string? Descripcion { get; set; }
+    [Column("tipo_doc")]
+    public string TipoDoc { get; set; } = string.Empty;
 
-    // URL del archivo — la BD guarda solo la referencia; el archivo vive fuera de la BD
-    [Column("url_archivo")]
-    public string UrlArchivo { get; set; } = string.Empty;
+    [Column("nombre_archivo")]
+    public string NombreArchivo { get; set; } = string.Empty;
+
+    [Column("url_storage")]
+    public string UrlStorage { get; set; } = string.Empty;
+
+    [Column("tamano_bytes")]
+    public int? TamanoBytes { get; set; }
+
+    [Column("subido_por")]
+    public int SubidoPor { get; set; }
 
     [Column("fecha_subida")]
     public DateTime FechaSubida { get; set; } = DateTime.Now;

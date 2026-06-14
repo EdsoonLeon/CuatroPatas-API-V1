@@ -35,8 +35,8 @@ public class MappingProfile : Profile
         CreateMap<CreateVeterinarioRequest, Veterinario>()
             // IdUsuario lo asigna el SP al crear la cuenta — AutoMapper no debe tocarlo
             .ForMember(d => d.IdUsuario, opt => opt.Ignore())
-            // FechaRegistro la asigna SQL Server con DEFAULT GETDATE() — no viene del request
-            .ForMember(d => d.FechaRegistro, opt => opt.Ignore())
+            // FechaAlta la asigna SQL Server con DEFAULT GETDATE() — no viene del request
+            .ForMember(d => d.FechaAlta, opt => opt.Ignore())
             // Activo siempre es true al crear — no se expone en el request
             .ForMember(d => d.Activo, opt => opt.Ignore());
         CreateMap<UpdateVeterinarioRequest, Veterinario>();

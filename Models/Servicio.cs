@@ -1,11 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// ARCHIVO: Servicio.cs
-// QUÉ HACE: Representa la tabla SERVICIO de la base de datos.
-//           Es el catálogo de todos los servicios que ofrece la clínica
-//           (consulta, vacuna, cirugía, baño, etc.) con su precio y duración.
-// QUIÉN LO USA: ServicioService, CitaService (al agregar servicios a una cita)
-// ═══════════════════════════════════════════════════════
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,17 +16,17 @@ public class Servicio
     [Column("descripcion")]
     public string? Descripcion { get; set; }
 
-    // Precio actual del servicio — al agregarlo a una cita, el SP copia este precio
-    // a DetalleCita.PrecioUnitario para "congelar" el precio en el momento de la atención
     [Column("precio")]
     public decimal Precio { get; set; }
 
-    // Duración estimada en minutos — útil para calcular disponibilidad y agenda
     [Column("duracion_minutos")]
-    public int DuracionMinutos { get; set; }
+    public int? DuracionMinutos { get; set; }
 
     [Column("activo")]
     public bool Activo { get; set; } = true;
+
+    [Column("fecha_creacion")]
+    public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
     public ICollection<DetalleCita> DetallesCita { get; set; } = new List<DetalleCita>();
 }

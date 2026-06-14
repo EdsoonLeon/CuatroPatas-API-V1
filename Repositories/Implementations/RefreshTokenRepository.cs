@@ -23,8 +23,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     // Include(Usuario) porque al rotar el token necesitamos los datos del usuario para el nuevo JWT
     public async Task<RefreshToken?> GetByTokenAsync(string token) =>
         await _context.RefreshTokens
-            .Include(r => r.Usuario)
-            .FirstOrDefaultAsync(r => r.Token == token);
+    .FirstOrDefaultAsync(r => r.Token == token);
 
     public async Task<RefreshToken> CreateAsync(RefreshToken refreshToken)
     {

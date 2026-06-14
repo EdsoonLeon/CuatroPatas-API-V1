@@ -43,18 +43,14 @@ public class DashboardService : IDashboardService
 
         return new DashboardResponse
         {
-            TotalCitasHoy = r.total_citas_hoy,
-            TotalCitasSemana = r.total_citas_semana,
-            TotalCitasMes = r.total_citas_mes,
-            TotalClientes = r.total_clientes,
-            TotalMascotas = r.total_mascotas,
-            TotalVeterinarios = r.total_veterinarios,
+            TotalCitas = r.citas_completadas + r.citas_pendientes + r.citas_confirmadas + r.citas_canceladas,
+            CitasCompletadas = r.citas_completadas,
             CitasPendientes = r.citas_pendientes,
-            CitasEnCurso = r.citas_en_curso,
-            CitasCompletadasHoy = r.citas_completadas_hoy,
-            IngresosHoy = r.ingresos_hoy,
-            IngresosMes = r.ingresos_mes,
-            MedicamentosStockBajo = r.medicamentos_stock_bajo
+            CitasConfirmadas = r.citas_confirmadas,
+            CitasCanceladas = r.citas_canceladas,
+            MascotasAtendidas = r.mascotas_atendidas,
+            MedicamentosBajoStock = r.medicamentos_bajo_stock,
+            IngresosCobrados = r.ingresos_cobrados
         };
     }
 }

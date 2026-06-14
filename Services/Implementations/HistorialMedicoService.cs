@@ -73,11 +73,13 @@ public class HistorialMedicoService : IHistorialMedicoService
             IdMascota = historial.IdMascota,
             IdVeterinario = historial.IdVeterinario,
             IdCita = historial.IdCita,
-            TipoRegistro = historial.TipoRegistro,
-            Descripcion = historial.Descripcion,
+            Fecha = historial.Fecha,
+            Tipo = historial.Tipo,
             Diagnostico = historial.Diagnostico,
             Tratamiento = historial.Tratamiento,
-            FechaRegistro = historial.FechaRegistro
+            Observaciones = historial.Observaciones,
+            Peso = historial.Peso,
+            Temperatura = historial.Temperatura
         };
     }
 
@@ -114,16 +116,12 @@ public class HistorialMedicoService : IHistorialMedicoService
     private static HistorialResponse MapResponse(HistorialSpResult r) => new()
     {
         IdHistorial = r.id_historial,
-        IdMascota = r.id_mascota,
-        NombreMascota = r.nombre_mascota ?? string.Empty,
-        IdVeterinario = r.id_veterinario,
-        NombreVeterinario = r.nombre_veterinario ?? string.Empty,
-        ApellidoVeterinario = r.apellido_veterinario ?? string.Empty,
-        IdCita = r.id_cita,
-        TipoRegistro = r.tipo_registro ?? string.Empty,
-        Descripcion = r.descripcion ?? string.Empty,
+        Fecha = r.fecha,
+        Tipo = r.tipo ?? string.Empty,
         Diagnostico = r.diagnostico,
         Tratamiento = r.tratamiento,
-        FechaRegistro = r.fecha_registro
+        Peso = r.peso,
+        Temperatura = r.temperatura,
+        NombreVeterinario = r.veterinario_nombre ?? string.Empty
     };
 }

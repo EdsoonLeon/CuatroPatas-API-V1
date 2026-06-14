@@ -1,9 +1,9 @@
-// ═══════════════════════════════════════════════════════
+
 // ARCHIVO: LoginRequest.cs
 // QUÉ HACE: Datos que el usuario envía para iniciar sesión.
 //           Solo necesita email y contraseña — nada más viaja por la red.
 // QUIÉN LO USA: AuthController.Login → AuthService.LoginAsync
-// ═══════════════════════════════════════════════════════
+
 
 using System.ComponentModel.DataAnnotations;
 

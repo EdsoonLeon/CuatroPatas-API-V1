@@ -55,7 +55,7 @@ public class AuthService : IAuthService
     {
         // Le preguntamos a la base de datos si existe ese email y nos devuelve
         // el hash de contraseña guardado + los roles del usuario en una sola consulta
-        var results = await _context.Set<AuthSpResult>()
+       var results = await _context.Set<AuthSpResult>()
             .FromSqlRaw("EXEC sp_Usuario_Authenticate @email",
                 new SqlParameter("@email", request.Email))
             .ToListAsync();
@@ -114,7 +114,7 @@ public class AuthService : IAuthService
             ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtHelper.GetExpirationMinutes()),
             IdUsuario = user.id_usuario,
             Email = user.email!,
-            NombreUsuario = user.nombre_usuario ?? string.Empty,
+            NombreUsuario = user.email!,
             Roles = roles
         };
     }
@@ -137,11 +137,10 @@ public class AuthService : IAuthService
 
         var usuario = new Usuario
         {
-            NombreUsuario = $"{request.Nombre} {request.Apellido}",
             Email = request.Email,
             PasswordHash = passwordHash,
             Activo = true,
-            FechaCreacion = DateTime.Now
+            FechaRegistro = DateTime.Now
         };
         await _usuarioRepo.CreateAsync(usuario);
 
@@ -186,10 +185,11 @@ public class AuthService : IAuthService
         var roles = await _context.UsuarioRoles
             .Where(ur => ur.IdUsuario == rt.IdUsuario)
             .Include(ur => ur.Rol)
-            .Select(ur => ur.Rol.NombreRol)
+            .Select(ur => ur.Rol.Nombre)
             .ToArrayAsync();
 
-        var usuario = rt.Usuario;
+        var usuario = await _usuarioRepo.GetByIdAsync(rt.IdUsuario)
+            ?? throw new UnauthorizedException("Usuario no encontrado.");
         var accessToken = _jwtHelper.GenerarToken(usuario.IdUsuario, usuario.Email, roles);
         var newRefreshToken = _jwtHelper.GenerarRefreshToken();
 
@@ -209,7 +209,7 @@ public class AuthService : IAuthService
             ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtHelper.GetExpirationMinutes()),
             IdUsuario = usuario.IdUsuario,
             Email = usuario.Email,
-            NombreUsuario = usuario.NombreUsuario,
+            NombreUsuario = usuario.Email,
             Roles = roles
         };
     }
@@ -230,5 +230,18 @@ public class AuthService : IAuthService
             NombreUsuario = email,
             Roles = roles.ToArray()
         });
+    }
+
+    public async Task ChangePasswordAsync(int idUsuario, ChangePasswordRequest request)
+    {
+        var usuario = await _usuarioRepo.GetByIdAsync(idUsuario)
+            ?? throw new NotFoundException("Usuario no encontrado.");
+
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, usuario.PasswordHash))
+            throw new UnauthorizedException("La contraseña actual es incorrecta.");
+
+        var newHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword, workFactor: 12);
+        await _usuarioRepo.ChangePasswordAsync(idUsuario, newHash);
+        _logger.LogInformation("Contraseña actualizada para usuario {Id}", idUsuario);
     }
 }

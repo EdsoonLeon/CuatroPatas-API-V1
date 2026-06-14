@@ -15,7 +15,6 @@ namespace CuatroPatas.API.Models.SpResults;
 public class AuthSpResult
 {
     public int id_usuario { get; set; }
-    public string? nombre_usuario { get; set; }
     public string? email { get; set; }
     // La "huella digital" de la contraseña — AuthService la compara con BCrypt.Verify()
     public string? password_hash { get; set; }

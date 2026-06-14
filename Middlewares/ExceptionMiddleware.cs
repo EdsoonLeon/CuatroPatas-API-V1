@@ -66,7 +66,7 @@ public class ExceptionMiddleware
             // Para errores inesperados (bugs reales), devolvemos un mensaje genérico.
             // Nunca enviamos el stack trace ni detalles internos al cliente —
             // un atacante podría usar esa información para explotar vulnerabilidades.
-            _ => (HttpStatusCode.InternalServerError, "Ocurrió un error interno del servidor.")
+            _ => (HttpStatusCode.InternalServerError, $"[DEBUG] {exception.GetType().Name}: {exception.Message} | {exception.InnerException?.Message}")
         };
 
         context.Response.StatusCode = (int)statusCode;

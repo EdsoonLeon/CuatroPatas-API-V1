@@ -31,8 +31,8 @@ public class NotificacionRepository : INotificacionRepository
     {
         var n = await _context.Notificaciones.FindAsync(id)
             ?? throw new NotFoundException($"Notificacion {id} no encontrada.");
-        n.Enviada = true;
-        n.FechaEnvio = DateTime.Now;
+        n.Enviado = true;
+        n.FechaEnviado = DateTime.Now;
         await _context.SaveChangesAsync();
     }
 }

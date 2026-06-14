@@ -41,5 +41,5 @@ public class RefreshToken
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
     // Propiedad de navegación — permite acceder al Usuario completo cuando se hace Include()
-    public Usuario Usuario { get; set; } = null!;
+   
 }

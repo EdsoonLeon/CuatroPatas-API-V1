@@ -17,4 +17,5 @@ public interface IAuthService
     Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request);
     Task LogoutAsync(string refreshToken);
     Task<MeResponse> GetMeAsync(int idUsuario, string email, IEnumerable<string> roles);
+    Task ChangePasswordAsync(int idUsuario, ChangePasswordRequest request);
 }

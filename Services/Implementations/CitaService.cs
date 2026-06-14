@@ -140,7 +140,7 @@ public class CitaService : ICitaService
         return results.Select(r => new CitaServicioResponse
         {
             IdServicio = r.id_servicio,
-            NombreServicio = r.nombre_servicio ?? string.Empty,
+            NombreServicio = r.servicio_nombre ?? string.Empty,
             PrecioUnitario = r.precio_unitario,
             Subtotal = r.subtotal
         }).ToList();
@@ -150,18 +150,15 @@ public class CitaService : ICitaService
     {
         IdCita = r.id_cita,
         IdMascota = r.id_mascota,
-        NombreMascota = r.nombre_mascota ?? string.Empty,
-        Especie = r.especie ?? string.Empty,
+        NombreMascota = r.mascota_nombre ?? string.Empty,
+        Especie = r.mascota_especie ?? string.Empty,
         IdVeterinario = r.id_veterinario,
-        NombreVeterinario = r.nombre_veterinario ?? string.Empty,
-        ApellidoVeterinario = r.apellido_veterinario ?? string.Empty,
+        NombreVeterinario = r.veterinario_nombre ?? string.Empty,
         IdCliente = r.id_cliente,
-        NombreCliente = r.nombre_cliente ?? string.Empty,
-        ApellidoCliente = r.apellido_cliente ?? string.Empty,
+        NombreCliente = r.cliente_nombre ?? string.Empty,
         FechaHora = r.fecha_hora,
         Estado = r.estado ?? string.Empty,
         Motivo = r.motivo ?? string.Empty,
         Observaciones = r.observaciones,
-        FechaCreacion = r.fecha_creacion
     };
 }

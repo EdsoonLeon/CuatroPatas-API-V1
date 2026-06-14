@@ -68,11 +68,10 @@ public class VeterinarioService : IVeterinarioService
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, workFactor: 12);
         var usuario = new Usuario
         {
-            NombreUsuario = $"{request.Nombre} {request.Apellido}",
             Email = request.Email,
             PasswordHash = passwordHash,
             Activo = true,
-            FechaCreacion = DateTime.Now
+            FechaRegistro = DateTime.Now
         };
         await _usuarioRepo.CreateAsync(usuario);
 
@@ -84,7 +83,7 @@ public class VeterinarioService : IVeterinarioService
 
         var vet = _mapper.Map<Veterinario>(request);
         vet.IdUsuario = usuario.IdUsuario;
-        vet.FechaRegistro = DateTime.Now;
+        vet.FechaAlta = DateTime.Now;
 
         var creado = await _repo.CreateAsync(vet);
         _logger.LogInformation("Veterinario creado: {Id}", creado.IdVeterinario);
@@ -122,11 +121,10 @@ public class VeterinarioService : IVeterinarioService
             FechaHora = r.fecha_hora,
             Estado = r.estado ?? string.Empty,
             Motivo = r.motivo ?? string.Empty,
-            NombreMascota = r.nombre_mascota ?? string.Empty,
+            NombreMascota = r.mascota_nombre ?? string.Empty,
             Especie = r.especie ?? string.Empty,
-            NombreCliente = r.nombre_cliente ?? string.Empty,
-            ApellidoCliente = r.apellido_cliente ?? string.Empty,
-            TelefonoCliente = r.telefono_cliente
+            NombreCliente = r.cliente_nombre ?? string.Empty,
+            TelefonoCliente = r.cliente_telefono
         }).ToList();
     }
 
@@ -142,12 +140,11 @@ public class VeterinarioService : IVeterinarioService
         var r = results.FirstOrDefault() ?? new EstadisticasSpResult();
         return new EstadisticasResponse
         {
-            TotalCitas = r.total_citas,
             CitasCompletadas = r.citas_completadas,
             CitasCanceladas = r.citas_canceladas,
             CitasPendientes = r.citas_pendientes,
-            IngresosTotal = r.ingresos_total,
-            Periodo = r.periodo
+            CitasConfirmadas = r.citas_confirmadas,
+            MascotasAtendidas = r.mascotas_atendidas
         };
     }
 }

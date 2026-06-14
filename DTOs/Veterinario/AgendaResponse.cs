@@ -18,6 +18,5 @@ public class AgendaResponse
     public string NombreMascota { get; set; } = string.Empty;
     public string Especie { get; set; } = string.Empty;
     public string NombreCliente { get; set; } = string.Empty;
-    public string ApellidoCliente { get; set; } = string.Empty;
     public string? TelefonoCliente { get; set; }
 }

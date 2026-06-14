@@ -17,15 +17,12 @@ public class CitaResponse
     public string Especie { get; set; } = string.Empty;
     public int IdVeterinario { get; set; }
     public string NombreVeterinario { get; set; } = string.Empty;
-    public string ApellidoVeterinario { get; set; } = string.Empty;
     // Null si el dueño de la mascota no tiene cuenta de cliente registrada
     public int? IdCliente { get; set; }
     public string NombreCliente { get; set; } = string.Empty;
-    public string ApellidoCliente { get; set; } = string.Empty;
     public DateTime FechaHora { get; set; }
     // "Pendiente", "En Curso", "Completada" o "Cancelada"
     public string Estado { get; set; } = string.Empty;
     public string Motivo { get; set; } = string.Empty;
     public string? Observaciones { get; set; }
-    public DateTime FechaCreacion { get; set; }
 }
