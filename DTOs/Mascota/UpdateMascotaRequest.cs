@@ -16,4 +16,5 @@ public class UpdateMascotaRequest
     public string? Color { get; set; }
     public decimal? Peso { get; set; }
     public string? NumeroChip { get; set; }
+    public int? IdCliente { get; set; }
 }

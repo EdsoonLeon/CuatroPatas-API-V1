@@ -171,6 +171,7 @@ builder.Services.AddScoped<IPrescripcionService, PrescripcionService>();
 builder.Services.AddScoped<IServicioService, ServicioService>();
 builder.Services.AddScoped<IPagoService, PagoService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
 builder.Services.AddControllers();
 

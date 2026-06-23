@@ -12,9 +12,8 @@ namespace CuatroPatas.API.Repositories.Interfaces;
 
 public interface IPagoRepository
 {
-    // La forma más común de buscar un pago — a partir del ID de la cita asociada
     Task<Pago?> GetByCitaIdAsync(int idCita);
     Task<Pago?> GetByIdAsync(int id);
-    // Se usa cuando el cliente cancela su deuda — actualiza estado, método y fecha
+    Task<List<(Pago Pago, string NombreCliente)>> GetByClienteNombreAsync(string nombre);
     Task<Pago> UpdateAsync(Pago pago);
 }

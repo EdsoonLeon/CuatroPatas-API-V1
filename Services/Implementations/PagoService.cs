@@ -37,6 +37,21 @@ public class PagoService : IPagoService
         return _mapper.Map<PagoResponse>(pago);
     }
 
+    public async Task<List<PagoClienteResponse>> GetByClienteNombreAsync(string nombre)
+    {
+        var resultados = await _repo.GetByClienteNombreAsync(nombre);
+        return resultados.Select(r => new PagoClienteResponse
+        {
+            IdPago = r.Pago.IdPago,
+            IdCita = r.Pago.IdCita,
+            NombreCliente = r.NombreCliente,
+            MontoTotal = r.Pago.MontoTotal,
+            EstadoPago = r.Pago.EstadoPago,
+            MetodoPago = r.Pago.MetodoPago,
+            FechaPago = r.Pago.FechaPago,
+        }).ToList();
+    }
+
     public async Task<PagoResponse> UpdateAsync(int id, UpdatePagoRequest request)
     {
         var pago = await _repo.GetByIdAsync(id)

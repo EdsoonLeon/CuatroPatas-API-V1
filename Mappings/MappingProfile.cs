@@ -44,7 +44,9 @@ public class MappingProfile : Profile
         // ─── Mascota ────────────────────────────────────────────
         CreateMap<Mascota, MascotaResponse>();
         CreateMap<CreateMascotaRequest, Mascota>();
-        CreateMap<UpdateMascotaRequest, Mascota>();
+        // IdCliente se maneja manualmente en MascotaService.UpdateAsync para preservar el dueño si no viene en el request
+        CreateMap<UpdateMascotaRequest, Mascota>()
+            .ForMember(d => d.IdCliente, opt => opt.Ignore());
 
         // ─── Servicio ───────────────────────────────────────────
         CreateMap<Servicio, ServicioResponse>();

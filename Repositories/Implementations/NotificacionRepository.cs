@@ -7,6 +7,7 @@
 // QUIÉN LO USA: NotificacionService (inyectado vía DI como INotificacionRepository)
 // ═══════════════════════════════════════════════════════
 
+using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
 using CuatroPatas.API.Models;
 using CuatroPatas.API.Repositories.Interfaces;
@@ -33,6 +34,29 @@ public class NotificacionRepository : INotificacionRepository
             ?? throw new NotFoundException($"Notificacion {id} no encontrada.");
         n.Enviado = true;
         n.FechaEnviado = DateTime.Now;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Notificacion>> GetByUsuarioAsync(int idUsuario)
+    {
+        return await _context.Notificaciones
+            .Where(n => n.IdUsuario == idUsuario)
+            .OrderByDescending(n => n.FechaProgramada)
+            .Take(50)
+            .ToListAsync();
+    }
+
+    public async Task MarkAllAsReadAsync(int idUsuario)
+    {
+        var pendientes = await _context.Notificaciones
+            .Where(n => n.IdUsuario == idUsuario && !n.Enviado)
+            .ToListAsync();
+        var ahora = DateTime.Now;
+        foreach (var n in pendientes)
+        {
+            n.Enviado = true;
+            n.FechaEnviado = ahora;
+        }
         await _context.SaveChangesAsync();
     }
 }

@@ -23,6 +23,16 @@ public class PagoController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Busca pagos por nombre del cliente (búsqueda parcial)</summary>
+    [HttpGet("buscar")]
+    public async Task<ActionResult<List<PagoClienteResponse>>> BuscarPorCliente([FromQuery] string nombre)
+    {
+        if (string.IsNullOrWhiteSpace(nombre))
+            return BadRequest("El nombre del cliente es requerido.");
+        var result = await _pagoService.GetByClienteNombreAsync(nombre);
+        return Ok(result);
+    }
+
     /// <summary>Actualiza el estado o método de pago de una orden</summary>
     [HttpPut("{id}")]
     public async Task<ActionResult<PagoResponse>> Update(int id, [FromBody] UpdatePagoRequest request)

@@ -74,6 +74,12 @@ public class MascotaService : IMascotaService
         var mascota = await _repo.GetByIdAsync(id)
             ?? throw new NotFoundException($"Mascota {id} no encontrada.");
         _mapper.Map(request, mascota);
+        if (request.IdCliente.HasValue)
+        {
+            _ = await _clienteRepo.GetByIdAsync(request.IdCliente.Value)
+                ?? throw new NotFoundException($"Cliente {request.IdCliente.Value} no encontrado.");
+            mascota.IdCliente = request.IdCliente.Value;
+        }
         var actualizada = await _repo.UpdateAsync(mascota);
         return _mapper.Map<MascotaResponse>(actualizada);
     }

@@ -14,5 +14,6 @@ namespace CuatroPatas.API.Services.Interfaces;
 public interface IPagoService
 {
     Task<PagoResponse> GetByCitaAsync(int idCita);
+    Task<List<PagoClienteResponse>> GetByClienteNombreAsync(string nombre);
     Task<PagoResponse> UpdateAsync(int id, UpdatePagoRequest request);
 }

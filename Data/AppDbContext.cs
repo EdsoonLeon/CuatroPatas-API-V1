@@ -53,6 +53,10 @@ public class AppDbContext : DbContext
     public DbSet<AgendaSpResult> AgendaSpResults { get; set; }
     public DbSet<EstadisticasSpResult> EstadisticasSpResults { get; set; }
     public DbSet<HistorialSpResult> HistorialSpResults { get; set; }
+    public DbSet<HistorialCreateSpResult> HistorialCreateSpResults { get; set; }
+    public DbSet<CitaCreateSpResult> CitaCreateSpResults { get; set; }
+    public DbSet<CitaListSpResult> CitaListSpResults { get; set; }
+    public DbSet<PrescripcionCreateSpResult> PrescripcionCreateSpResults { get; set; }
     public DbSet<PrescripcionSpResult> PrescripcionSpResults { get; set; }
     public DbSet<StockBajoSpResult> StockBajoSpResults { get; set; }
     public DbSet<DashboardSpResult> DashboardSpResults { get; set; }
@@ -232,6 +236,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<AgendaSpResult>().HasNoKey();
         modelBuilder.Entity<EstadisticasSpResult>().HasNoKey();
         modelBuilder.Entity<HistorialSpResult>().HasNoKey();
+        modelBuilder.Entity<HistorialCreateSpResult>().HasNoKey();
+        modelBuilder.Entity<CitaCreateSpResult>().HasNoKey();
+        modelBuilder.Entity<CitaListSpResult>().HasNoKey();
+        modelBuilder.Entity<PrescripcionCreateSpResult>().HasNoKey();
         modelBuilder.Entity<PrescripcionSpResult>().HasNoKey();
         modelBuilder.Entity<StockBajoSpResult>().HasNoKey();
         modelBuilder.Entity<DashboardSpResult>().HasNoKey();

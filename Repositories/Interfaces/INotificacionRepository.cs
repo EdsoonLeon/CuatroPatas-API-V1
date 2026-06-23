@@ -13,6 +13,7 @@ namespace CuatroPatas.API.Repositories.Interfaces;
 public interface INotificacionRepository
 {
     Task<Notificacion> CreateAsync(Notificacion notificacion);
-    // Actualiza Enviada = true y FechaEnvio = ahora — lo llama el servicio de despacho
     Task MarkAsSentAsync(int id);
+    Task<List<Notificacion>> GetByUsuarioAsync(int idUsuario);
+    Task MarkAllAsReadAsync(int idUsuario);
 }

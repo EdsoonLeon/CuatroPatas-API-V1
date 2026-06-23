@@ -15,4 +15,7 @@ public class UpdateMedicamentoRequest
 
     [Required, Range(0.01, double.MaxValue)]
     public decimal PrecioUnitario { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int Stock { get; set; }
 }

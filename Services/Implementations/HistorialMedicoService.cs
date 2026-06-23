@@ -9,7 +9,6 @@
 // QUIÉN LO USA: HistorialController (inyectado como IHistorialMedicoService)
 // ═══════════════════════════════════════════════════════
 
-using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
@@ -37,29 +36,40 @@ public class HistorialMedicoService : IHistorialMedicoService
         _logger = logger;
     }
 
-    /// <summary>Crea el historial vía SP y devuelve el registro completo usando el ID obtenido por OUTPUT</summary>
+    /// <summary>Crea el historial vía SP y construye el response desde los datos del request</summary>
     public async Task<HistorialResponse> CreateAsync(CreateHistorialRequest request)
     {
-        // OUTPUT parameter — el SP también registra auditoría internamente
-        var idParam = new SqlParameter("@id_historial", SqlDbType.Int)
-        {
-            Direction = ParameterDirection.Output
-        };
+        // Usamos @sp_param = @batch_param porque @fecha (pos 4) es opcional y está en el medio.
+        // Sin named params, @tipo (nvarchar) se mapearía posicionalmente a @fecha (DATE) → error de conversión.
+        var results = await _context.Set<HistorialCreateSpResult>()
+            .FromSqlRaw(
+                "EXEC sp_HistorialMedico_Create @id_mascota = @id_mascota, @id_cita = @id_cita, @id_veterinario = @id_veterinario, @tipo = @tipo, @diagnostico = @diagnostico, @tratamiento = @tratamiento, @observaciones = @observaciones",
+                new SqlParameter("@id_mascota", request.IdMascota),
+                new SqlParameter("@id_cita", (object?)request.IdCita ?? DBNull.Value),
+                new SqlParameter("@id_veterinario", request.IdVeterinario),
+                new SqlParameter("@tipo", request.TipoRegistro),
+                new SqlParameter("@diagnostico", (object?)request.Diagnostico ?? DBNull.Value),
+                new SqlParameter("@tratamiento", (object?)request.Tratamiento ?? DBNull.Value),
+                new SqlParameter("@observaciones", (object?)request.Descripcion ?? DBNull.Value))
+            .ToListAsync();
 
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC sp_HistorialMedico_Create @id_mascota, @id_veterinario, @id_cita, @tipo_registro, @descripcion, @diagnostico, @tratamiento, @id_historial OUTPUT",
-            new SqlParameter("@id_mascota", request.IdMascota),
-            new SqlParameter("@id_veterinario", request.IdVeterinario),
-            new SqlParameter("@id_cita", (object?)request.IdCita ?? DBNull.Value),
-            new SqlParameter("@tipo_registro", request.TipoRegistro),
-            new SqlParameter("@descripcion", request.Descripcion),
-            new SqlParameter("@diagnostico", (object?)request.Diagnostico ?? DBNull.Value),
-            new SqlParameter("@tratamiento", (object?)request.Tratamiento ?? DBNull.Value),
-            idParam);
-
-        var newId = (int)idParam.Value;
+        var newId = (int)results.First().id_historial;
         _logger.LogInformation("Historial médico creado: {Id}", newId);
-        return await GetByIdAsync(newId);
+
+        // Construimos el response directamente desde el request para evitar una segunda
+        // consulta EF Core que puede fallar si el contexto tiene problemas de mapeo.
+        return new HistorialResponse
+        {
+            IdHistorial = newId,
+            IdMascota = request.IdMascota,
+            IdVeterinario = request.IdVeterinario,
+            IdCita = request.IdCita,
+            Fecha = DateOnly.FromDateTime(DateTime.Today),
+            Tipo = request.TipoRegistro,
+            Diagnostico = request.Diagnostico,
+            Tratamiento = request.Tratamiento,
+            Observaciones = request.Descripcion,
+        };
     }
 
     public async Task<HistorialResponse> GetByIdAsync(int id)

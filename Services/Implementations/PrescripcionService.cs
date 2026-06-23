@@ -10,7 +10,6 @@
 // QUIÉN LO USA: PrescripcionController (inyectado como IPrescripcionService)
 // ═══════════════════════════════════════════════════════
 
-using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using CuatroPatas.API.Data;
@@ -38,26 +37,23 @@ public class PrescripcionService : IPrescripcionService
         _logger = logger;
     }
 
-    /// <summary>Crea la prescripción vía SP (que descuenta stock) y devuelve el registro por ID OUTPUT</summary>
+    /// <summary>Crea la prescripción vía SP (que descuenta stock atomicamente) y captura el ID con SELECT</summary>
     public async Task<PrescripcionResponse> CreateAsync(CreatePrescripcionRequest request)
     {
-        // El SP descuenta el stock del medicamento internamente — no se hace en la app
-        var idParam = new SqlParameter("@id_prescripcion", SqlDbType.Int)
-        {
-            Direction = ParameterDirection.Output
-        };
+        // sp_Prescripcion_Create NO tiene OUTPUT — devuelve SELECT id_prescripcion AS id_prescripcion.
+        // Usamos named params (@sp = @batch) para saltar @duracion_dias (pos 5) e @indicaciones (pos 6) opcionales.
+        var results = await _context.Set<PrescripcionCreateSpResult>()
+            .FromSqlRaw(
+                "EXEC sp_Prescripcion_Create @id_historial = @id_historial, @id_medicamento = @id_medicamento, @dosis = @dosis, @frecuencia = @frecuencia, @duracion_dias = @duracion_dias, @cantidad_usar = @cantidad_usar",
+                new SqlParameter("@id_historial", request.IdHistorial),
+                new SqlParameter("@id_medicamento", request.IdMedicamento),
+                new SqlParameter("@dosis", request.Dosis),
+                new SqlParameter("@frecuencia", (object?)request.Frecuencia ?? DBNull.Value),
+                new SqlParameter("@duracion_dias", DBNull.Value),
+                new SqlParameter("@cantidad_usar", request.Cantidad > 0 ? request.Cantidad : 1))
+            .ToListAsync();
 
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC sp_Prescripcion_Create @id_historial, @id_medicamento, @dosis, @frecuencia, @duracion, @cantidad, @id_prescripcion OUTPUT",
-            new SqlParameter("@id_historial", request.IdHistorial),
-            new SqlParameter("@id_medicamento", request.IdMedicamento),
-            new SqlParameter("@dosis", request.Dosis),
-            new SqlParameter("@frecuencia", request.Frecuencia),
-            new SqlParameter("@duracion", request.Duracion),
-            new SqlParameter("@cantidad", request.Cantidad),
-            idParam);
-
-        var newId = (int)idParam.Value;
+        var newId = results.First().id_prescripcion;
         _logger.LogInformation("Prescripción creada: {Id}", newId);
 
         var prescripcion = await _repo.GetByIdAsync(newId)

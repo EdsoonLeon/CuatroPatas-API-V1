@@ -27,6 +27,7 @@ public class VeterinarioService : IVeterinarioService
 {
     private readonly IVeterinarioRepository _repo;
     private readonly IUsuarioRepository _usuarioRepo;
+    private readonly IRolRepository _rolRepo;
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<VeterinarioService> _logger;
@@ -34,12 +35,14 @@ public class VeterinarioService : IVeterinarioService
     public VeterinarioService(
         IVeterinarioRepository repo,
         IUsuarioRepository usuarioRepo,
+        IRolRepository rolRepo,
         AppDbContext context,
         IMapper mapper,
         ILogger<VeterinarioService> logger)
     {
         _repo = repo;
         _usuarioRepo = usuarioRepo;
+        _rolRepo = rolRepo;
         _context = context;
         _mapper = mapper;
         _logger = logger;
@@ -75,11 +78,12 @@ public class VeterinarioService : IVeterinarioService
         };
         await _usuarioRepo.CreateAsync(usuario);
 
-        // El SP asigna el rol en USUARIO_ROL y maneja duplicados internamente
+        var rolVeterinario = await _rolRepo.GetByNameAsync("Veterinario")
+            ?? throw new InvalidOperationException("El rol 'Veterinario' no existe en el sistema.");
         await _context.Database.ExecuteSqlRawAsync(
-            "EXEC sp_Usuario_AssignRole @id_usuario, @nombre_rol",
+            "EXEC sp_Usuario_AssignRole @id_usuario, @id_rol",
             new SqlParameter("@id_usuario", usuario.IdUsuario),
-            new SqlParameter("@nombre_rol", "Veterinario"));
+            new SqlParameter("@id_rol", rolVeterinario.IdRol));
 
         var vet = _mapper.Map<Veterinario>(request);
         vet.IdUsuario = usuario.IdUsuario;
